@@ -5,7 +5,6 @@ const { connectOracle } = require("../config/connectOracle");
 const { connectPostgres } = require("../config/connectPostgresql");
 const express = require("express");
 const cors = require("cors");
-const helmet = require("helmet");
 
 connectSQL();
 connectMysql();
@@ -22,12 +21,17 @@ const sanPhamRoutes = require("../routes/sanPhamRoutes");
 const nhaCungCapRoutes = require("../routes/nhaCungCapRoutes");
 const phieuNhapRoutes = require("../routes/phieuNhapRoutes");
 const chiTietPhieuNhapRoutes = require("../routes/chiTietPhieuNhapRoutes");
+const nhanVienRoutes = require("../routes/nhanVienRoutes");
+const taiKhoanRoutes = require("../routes/taiKhoanRoutes");
+const loaiKHRoutes = require("../routes/loaiKHRoutes");
+const khachHangRoutes = require("../routes/khachHangRoutes");
+const hoaDonRoutes = require("../routes/hoaDonRoutes");
+const chiTietHoaDonRoutes = require("../routes/chiTietHoaDonRoutes");
 
 const app = express();
 app.set("trust proxy", true);
 app.use(express.json());
 app.use(cors());
-app.use(helmet());
 app.use("/api/phantan", phanTanRoutes);
 app.use("/api/tinh", tinhRoutes);
 app.use("/api/chinhanh", chiNhanhRoutes);
@@ -38,6 +42,12 @@ app.use("/api/sanpham", sanPhamRoutes);
 app.use("/api/nhacungcap", nhaCungCapRoutes);
 app.use("/api/phieunhap", phieuNhapRoutes);
 app.use("/api/chitietphieunhap", chiTietPhieuNhapRoutes);
+app.use("/api/nhanvien", nhanVienRoutes);
+app.use("/api/taikhoan", taiKhoanRoutes);
+app.use("/api/loaikhachhang", loaiKHRoutes);
+app.use("/api/khachhang", khachHangRoutes);
+app.use("/api/hoadon", hoaDonRoutes);
+app.use("/api/chitiethoadon", chiTietHoaDonRoutes);
 
 app.use((req, res, next) => {
   if (res.headersSent) return next(err);
