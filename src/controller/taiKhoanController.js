@@ -32,7 +32,7 @@ const getTaiKhoanById = async (req, res) => {
 
 const createTaiKhoan = async (req, res) => {
   const { TenTK, MaNhanVien, MatKhau, Quyen } = req.body;
-  const insertQuery = `INSERT INTO TaiKhoan VALUES ('${TenTK}', '${MaNhanVien}', '${MatKhau}', '${Quyen}')`;
+  const insertQuery = `INSERT INTO TaiKhoan VALUES ('${TenTK}', '${MaNhanVien}', ${MatKhau}, '${Quyen}')`;
   const checkTaiKhoan = `SELECT COUNT(*) as count FROM TaiKhoan WHERE TenTK = '${TenTK}' and MaNhanVien = '${MaNhanVien}'`;
   try {
     const TKExists = await checkInsert(checkTaiKhoan);
@@ -48,6 +48,7 @@ const createTaiKhoan = async (req, res) => {
       } else {
         sqlPool.request().query(insertQuery, (sqlError) => {
           if (sqlError) {
+            console.error(sqlError);
             res.send({ message: "Lỗi khi thêm ở SQL Server" });
           } else {
             res.status(200).json({ message: "Đồng bộ thêm thành công" });

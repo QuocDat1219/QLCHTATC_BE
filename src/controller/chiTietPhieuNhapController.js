@@ -3,10 +3,10 @@ const { mysqlConnection } = require("../config/connectMysql");
 const { checkUpdate, checkInsert } = require("../auth/checkInfo");
 
 const getAllChiTietPhieuNhap = async (req, res) => {
+  const id = req.params.id;
   try {
     // Sử dụng mysqlConnection để thực hiện truy vấn trên MySQL
-    const sqlQuery =
-      "select MaPhieuNhap, TenSanPham, SoLuong,DonGia from CHITIETPHIEUNHAP ct inner join SANPHAM sp on sp.MaSanPham = ct.MaSanPham"; // Đảm bảo tên bảng là chính xác
+    const sqlQuery = `select ct.MaPhieuNhap as MaPhieuNhap, TenSanPham, SoLuong,DonGia,TongTien,TenNhaCungCap,TenChiNhanh, NgayNhap,sp.MaSanPham as MaSanPham from CHITIETPHIEUNHAP ct inner join SANPHAM sp on sp.MaSanPham = ct.MaSanPham inner join phieunhap pn on pn.maphieunhap = ct.maphieunhap inner join chinhanh cn on pn.machinhanh = cn.machinhanh inner join nhacungcap cc on cc.manhacungcap = pn.manhacungcap WHERE ct.MaPhieuNhap = '${id}'`; // Đảm bảo tên bảng là chính xác
     const [rows, fields] = await mysqlConnection.promise().query(sqlQuery);
     res.json(rows);
   } catch (error) {
@@ -16,7 +16,7 @@ const getAllChiTietPhieuNhap = async (req, res) => {
 
 const getChiTietPhieuNhapById = async (req, res) => {
   try {
-    const sqlQuery = `SELECT * FROM ChiTietPhieuNhap WHERE MaPhieuNhap = '${req.params.id}'`;
+    const sqlQuery = `select ct.MaPhieuNhap as MaPhieuNhap, TenSanPham, SoLuong,DonGia,TongTien,TenNhaCungCap,TenChiNhanh, NgayNhap,sp.MaSanPham as MaSanPham from CHITIETPHIEUNHAP ct inner join SANPHAM sp on sp.MaSanPham = ct.MaSanPham inner join phieunhap pn on pn.maphieunhap = ct.maphieunhap inner join chinhanh cn on pn.machinhanh = cn.machinhanh inner join nhacungcap cc on cc.manhacungcap = pn.manhacungcap WHERE ct.MaPhieuNhap = '${req.params.id}'`;
     const [rows, fields] = await mysqlConnection.promise().query(sqlQuery);
     if (rows) {
       res.status(200).json(rows);

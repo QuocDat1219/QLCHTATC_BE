@@ -6,11 +6,13 @@ const {
   createNhanVien,
   updateNhanVien,
   deleteNhanVien,
+  nhanVienLogin,
 } = require("../controller/nhanVienController");
 
 router.get("/", getAllNhanVien);
 router.get("/:id", getNhanVienById);
 router.post("/", createNhanVien);
+router.post("/login", nhanVienLogin);
 router.put("/", updateNhanVien);
 router.delete("/:id", deleteNhanVien);
 

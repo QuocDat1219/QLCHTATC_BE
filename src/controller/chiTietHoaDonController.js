@@ -19,7 +19,12 @@ const getAllChiTietHoaDon = async (req, res) => {
 
 const getChiTietHoaDonById = async (req, res) => {
   try {
-    const sqlQuery = `SELECT * FROM ChiTietHoaDon WHERE MaHoaDon = '${req.params.id}'`;
+    const sqlQuery = `select ct.MaHoaDon as MaHoaDon, TenKhachHang, TenSanPham, GiaSanPham, SoLuong, SoLuong * GiaSanPham as ThanhTien, TenNhanVien, TenChiNhanh, NgayLap, sp.MaSanPham as MaSanPham from CHITIETHOADON ct 
+    inner join HOADON hd on hd.MaHoaDon = ct.MaHoaDon
+    inner join KHACHHANG kh on kh.MaKhachHang = hd.MaKhachHang
+    inner join NHANVIEN nv on nv.MaNhanVien = hd.MaNhanVien
+    inner join CHINHANH cn on cn.MaChiNhanh = hd.MaChiNhanh
+    inner join SANPHAM sp on sp.MaSanPham = ct.MaSanPham WHERE ct.MaHoaDon = '${req.params.id}'`;
     const [rows, fields] = await mysqlConnection.promise().query(sqlQuery);
     if (rows) {
       res.status(200).json(rows);
