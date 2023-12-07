@@ -969,15 +969,15 @@ const migrateData = async (req, res) => {
     } else {
       // Tạo bảng taikhoan ở MySQL
       const createTaiKhoanMysql =
-        "CREATE TABLE TAIKHOAN (TenTK varchar(50) primary key, MaNhanVien varchar(20), Matkhau varchar(50), Quyen varchar(10), FOREIGN KEY (MaNhanVien) REFERENCES NHANVIEN(MaNhanVien))";
+        "CREATE TABLE TAIKHOAN (TenTK varchar(50) primary key, MaNhanVien varchar(20), MatKhau varchar(50), Quyen varchar(10), FOREIGN KEY (MaNhanVien) REFERENCES NHANVIEN(MaNhanVien))";
       await mysqlConnection.promise().query(createTaiKhoanMysql);
 
       // Insert dữ liệu vào bảng taikhoan ở MySQL
-      const insertTaiKhoanMysql = `INSERT INTO TAIKHOAN (TenTK, MaNhanVien, Matkhau, Quyen) VALUES ?`;
+      const insertTaiKhoanMysql = `INSERT INTO TAIKHOAN (TenTK, MaNhanVien, MatKhau, Quyen) VALUES ?`;
       const valuesTaiKhoanMysql = resultsTaiKhoanMysql.map((row) => [
         row.TenTK,
         row.MaNhanVien,
-        row.Matkhau,
+        row.MatKhau,
         row.Quyen,
       ]);
       await mysqlConnection
@@ -986,37 +986,37 @@ const migrateData = async (req, res) => {
 
       // Tạo bảng taikhoan ở Oracle
       const oracleQueryTaiKhoan =
-        "CREATE TABLE TAIKHOAN (TenTK VARCHAR2(50) PRIMARY KEY, MaNhanVien VARCHAR2(20), Matkhau VARCHAR2(50), Quyen VARCHAR2(10), FOREIGN KEY (MaNhanVien) REFERENCES NHANVIEN(MaNhanVien))";
+        "CREATE TABLE TAIKHOAN (TenTK VARCHAR2(50) PRIMARY KEY, MaNhanVien VARCHAR2(20), MatKhau VARCHAR2(50), Quyen VARCHAR2(10), FOREIGN KEY (MaNhanVien) REFERENCES NHANVIEN(MaNhanVien))";
       await executeOracleQuery(oracleQueryTaiKhoan);
 
       // Insert dữ liệu vào bảng taikhoan ở Oracle
       for (const row of resultsTaiKhoanOra) {
         const TenTK = row.TenTK;
         const MaNhanVien = row.MaNhanVien;
-        const Matkhau = row.Matkhau;
+        const MatKhau = row.MatKhau;
         const Quyen = row.Quyen;
 
         const oraInsertTaiKhoan =
-          "INSERT INTO TAIKHOAN (TenTK, MaNhanVien, Matkhau, Quyen) VALUES (:TenTK, :MaNhanVien, :Matkhau, :Quyen)";
-        const oraParamsTaiKhoan = [TenTK, MaNhanVien, Matkhau, Quyen];
+          "INSERT INTO TAIKHOAN (TenTK, MaNhanVien, Matkhau, Quyen) VALUES (:TenTK, :MaNhanVien, :MatKhau, :Quyen)";
+        const oraParamsTaiKhoan = [TenTK, MaNhanVien, MatKhau, Quyen];
         await executeOracleQuery(oraInsertTaiKhoan, oraParamsTaiKhoan);
 
         // Phân tán PostgreSQL
       }
       const pgQueryTaiKhoan =
-        "CREATE TABLE TAIKHOAN (TenTK VARCHAR(50) PRIMARY KEY, MaNhanVien VARCHAR(20), Matkhau VARCHAR(50), Quyen VARCHAR(10), FOREIGN KEY (MaNhanVien) REFERENCES NHANVIEN(MaNhanVien))";
+        "CREATE TABLE TAIKHOAN (TenTK VARCHAR(50) PRIMARY KEY, MaNhanVien VARCHAR(20), MatKhau VARCHAR(50), Quyen VARCHAR(10), FOREIGN KEY (MaNhanVien) REFERENCES NHANVIEN(MaNhanVien))";
       await postgresClient.query(pgQueryTaiKhoan);
 
       // Insert dữ liệu vào bảng taikhoan ở PostgreSQL
       for (const row of resultsTaiKhoanPg) {
         const TenTK = row.TenTK;
         const MaNhanVien = row.MaNhanVien;
-        const Matkhau = row.Matkhau;
+        const MatKhau = row.MatKhau;
         const Quyen = row.Quyen;
 
         const pgInsertTaiKhoan =
-          "INSERT INTO TAIKHOAN (TenTK, MaNhanVien, Matkhau, Quyen) VALUES ($1, $2, $3, $4)";
-        const pgParamsTaiKhoan = [TenTK, MaNhanVien, Matkhau, Quyen];
+          "INSERT INTO TAIKHOAN (TenTK, MaNhanVien, MatKhau, Quyen) VALUES ($1, $2, $3, $4)";
+        const pgParamsTaiKhoan = [TenTK, MaNhanVien, MatKhau, Quyen];
         await postgresClient.query(pgInsertTaiKhoan, pgParamsTaiKhoan);
       }
     }
@@ -1374,6 +1374,37 @@ const migrateData = async (req, res) => {
   res.send({ message: "Phân tán thành công" });
 };
 
+const deleteAllTableInOtherSite = async (req, res, next) => {
+  try {
+    const tableToDrops = [
+      "drop table chitiethoadon",
+      "drop table hoadon",
+      "drop TABLE khachhang",
+      "drop table loaikhachhang",
+      "drop table taikhoan", //
+      "drop table nhanvien",
+      "drop table chitietphieunhap",
+      "drop table phieunhap",
+      "drop table nhacungcap",
+      "drop table sanpham",
+      "drop table thuonghieu",
+      "drop table danhmuc",
+      "drop table kho",
+      "drop table chinhanh",
+      " drop table tinh",
+    ];
+    for (const sqlQuery of tableToDrops) {
+      await mysqlConnection.promise().query(sqlQuery);
+      await executeOracleQuery(sqlQuery);
+      await postgresClient.query(sqlQuery);
+    }
+    res.status(200).send({ message: "Bảng ở các site đã được xóa!" });
+  } catch (error) {
+    res.send({ message: "Đã xảy ra lỗi khi xóa bảng: " + error.message });
+  }
+};
+
 module.exports = {
   migrateData,
+  deleteAllTableInOtherSite,
 };
