@@ -1375,6 +1375,7 @@ const migrateData = async (req, res) => {
 };
 
 const deleteAllTableInOtherSite = async (req, res, next) => {
+  // console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
   try {
     const tableToDrops = [
       "drop table chitiethoadon",
