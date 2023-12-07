@@ -139,8 +139,8 @@ const nhanVienLogin = async (req, res) => {
       res.send({ message: "Sai tên tài khoản hoặc mật khẩu" });
     } else {
       const userInfo = `select nv.MaNhanVien as MaNhanVien, TenNhanVien,Quyen from taikhoan tk inner join nhanvien nv on tk.MaNhanVien = nv.MaNhanVien where tk.TenTK = '${req.body.taikhoan}' and tk.MatKhau = '${req.body.matkhau}'`;
-      const nhanvien = await sqlPool.request().query(userInfo);
-      res.status(200).json(nhanvien.recordset);
+      const [rows, fields] = await mysqlConnection.promise().query(userInfo);
+      res.status(200).json(rows);
     }
   } catch (error) {
     console.error(error);
